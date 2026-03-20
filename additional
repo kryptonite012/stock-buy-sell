@@ -1,0 +1,878 @@
+<html lang="en"><head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bazaar — Indian Stock Brokerage</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg-primary: #ffffff;
+    --bg-secondary: #f5f5f0;
+    --bg-success: #e1f5ee;
+    --bg-danger: #fcebeb;
+    --bg-info: #e6f1fb;
+    --text-primary: #1a1a1a;
+    --text-secondary: #6b6b6b;
+    --text-success: #0f6e56;
+    --text-danger: #a32d2d;
+    --text-info: #0c447c;
+    --border: rgba(0,0,0,0.12);
+    --border-md: rgba(0,0,0,0.22);
+    --radius-md: 8px;
+    --radius-lg: 12px;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg-primary: #1c1c1e;
+      --bg-secondary: #2c2c2e;
+      --bg-success: #085041;
+      --bg-danger: #501313;
+      --bg-info: #0c447c;
+      --text-primary: #f0f0f0;
+      --text-secondary: #ababab;
+      --text-success: #9fe1cb;
+      --text-danger: #f7c1c1;
+      --text-info: #b5d4f4;
+      --border: rgba(255,255,255,0.1);
+      --border-md: rgba(255,255,255,0.2);
+    }
+  }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: var(--bg-secondary); color: var(--text-primary); min-height: 100vh; }
+  .app { max-width: 720px; margin: 0 auto; padding: 1.25rem 1rem 3rem; }
+  .header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.25rem; }
+  .brand { font-size: 20px; font-weight: 600; display: flex; align-items: center; gap: 8px; }
+  .brand-dot { width: 11px; height: 11px; border-radius: 50%; background: #1D9E75; }
+  .exchange-badge { font-size: 11px; padding: 3px 8px; border-radius: 99px; background: var(--bg-primary); color: var(--text-secondary); border: 0.5px solid var(--border); }
+  .header-right { display: flex; gap: 6px; align-items: center; }
+  .market-time { font-size: 11px; color: var(--text-secondary); }
+  .index-bar { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 8px; margin-bottom: 1.25rem; }
+  .index-card { background: var(--bg-primary); border-radius: var(--radius-md); padding: 10px 12px; border: 0.5px solid var(--border); }
+  .index-name { font-size: 10px; color: var(--text-secondary); margin-bottom: 3px; text-transform: uppercase; letter-spacing: 0.3px; }
+  .index-val { font-size: 15px; font-weight: 600; }
+  .index-chg { font-size: 11px; margin-top: 2px; }
+  .up { color: var(--text-success); }
+  .down { color: var(--text-danger); }
+  .tab-bar { display: flex; gap: 4px; background: var(--bg-primary); border-radius: var(--radius-md); padding: 3px; margin-bottom: 1.25rem; border: 0.5px solid var(--border); }
+  .tab { flex: 1; padding: 8px 4px; font-size: 13px; font-weight: 500; border: none; background: transparent; color: var(--text-secondary); cursor: pointer; border-radius: 6px; transition: all 0.15s; }
+  .tab.active { background: var(--bg-secondary); color: var(--text-primary); border: 0.5px solid var(--border); }
+  .section { display: none; }
+  .section.active { display: block; }
+  .search-bar { width: 100%; padding: 9px 12px; font-size: 14px; border: 0.5px solid var(--border-md); border-radius: var(--radius-md); background: var(--bg-primary); color: var(--text-primary); margin-bottom: 1rem; outline: none; }
+  .search-bar:focus { border-color: #378ADD; box-shadow: 0 0 0 2px rgba(55,138,221,0.15); }
+  .sector-pills { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 1rem; }
+  .pill { padding: 4px 11px; font-size: 11px; border-radius: 99px; border: 0.5px solid var(--border-md); background: var(--bg-primary); color: var(--text-secondary); cursor: pointer; transition: all 0.12s; }
+  .pill.active { background: var(--bg-info); color: var(--text-info); border-color: #378ADD; }
+  .stock-list { background: var(--bg-primary); border-radius: var(--radius-lg); border: 0.5px solid var(--border); padding: 0 1rem; }
+  .stock-row { display: flex; align-items: center; justify-content: space-between; padding: 12px 0; border-bottom: 0.5px solid var(--border); }
+  .stock-row:last-child { border-bottom: none; }
+  .sticker { font-weight: 600; font-size: 14px; }
+  .sname { font-size: 11px; color: var(--text-secondary); margin-top: 2px; }
+  .ssector { display: inline-block; font-size: 10px; padding: 1px 6px; border-radius: 99px; background: var(--bg-secondary); color: var(--text-secondary); margin-top: 3px; }
+  .sprice { font-size: 14px; font-weight: 600; text-align: right; }
+  .schg { font-size: 11px; margin-top: 2px; text-align: right; }
+  .action-btns { display: flex; gap: 5px; margin-left: 10px; }
+  .btn-b, .btn-s { padding: 5px 12px; font-size: 11px; font-weight: 600; border: none; border-radius: 6px; cursor: pointer; transition: opacity 0.12s; }
+  .btn-b:hover, .btn-s:hover { opacity: 0.8; }
+  .btn-b { background: var(--bg-success); color: var(--text-success); }
+  .btn-s { background: var(--bg-danger); color: var(--text-danger); }
+  .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.45); z-index: 100; align-items: center; justify-content: center; padding: 1rem; }
+  .modal-overlay.show { display: flex; }
+  .modal { background: var(--bg-primary); border-radius: var(--radius-lg); border: 0.5px solid var(--border); padding: 1.5rem; width: 100%; max-width: 360px; }
+  .modal-hd { font-size: 17px; font-weight: 600; margin-bottom: 2px; }
+  .modal-sub { font-size: 12px; color: var(--text-secondary); margin-bottom: 1.25rem; }
+  .order-type-row { display: flex; gap: 6px; margin-bottom: 1rem; }
+  .otype { flex: 1; padding: 7px; font-size: 12px; text-align: center; border: 0.5px solid var(--border-md); border-radius: var(--radius-md); cursor: pointer; color: var(--text-secondary); background: var(--bg-primary); transition: all 0.12s; }
+  .otype.selected { background: var(--bg-info); color: var(--text-info); border-color: #378ADD; }
+  .flabel { font-size: 12px; color: var(--text-secondary); margin-bottom: 6px; }
+  .qty-row { display: flex; align-items: center; gap: 10px; margin-bottom: 1rem; }
+  .qbtn { width: 34px; height: 34px; border: 0.5px solid var(--border-md); border-radius: var(--radius-md); background: var(--bg-secondary); color: var(--text-primary); font-size: 18px; cursor: pointer; display: flex; align-items: center; justify-content: center; user-select: none; }
+  .qval { flex: 1; text-align: center; font-size: 22px; font-weight: 600; }
+  .total-line { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-top: 0.5px solid var(--border); margin-bottom: 6px; }
+  .avail { font-size: 12px; color: var(--text-secondary); margin-bottom: 1rem; }
+  .cfm-btn { width: 100%; padding: 11px; font-size: 14px; font-weight: 600; border: none; border-radius: var(--radius-md); cursor: pointer; transition: opacity 0.12s; }
+  .cfm-btn:hover { opacity: 0.88; }
+  .cfm-buy { background: #1D9E75; color: #E1F5EE; }
+  .cfm-sell { background: #E24B4A; color: #FCEBEB; }
+  .cancel-lnk { display: block; text-align: center; font-size: 13px; color: var(--text-secondary); margin-top: 10px; cursor: pointer; }
+  .cancel-lnk:hover { color: var(--text-primary); }
+  .metrics { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 1.25rem; }
+  .metric { background: var(--bg-primary); border-radius: var(--radius-md); padding: 12px; border: 0.5px solid var(--border); }
+  .mlabel { font-size: 11px; color: var(--text-secondary); margin-bottom: 4px; }
+  .mval { font-size: 18px; font-weight: 600; }
+  .chart-wrap { position: relative; width: 100%; height: 200px; margin-bottom: 0.75rem; }
+  .port-legend { display: flex; gap: 12px; font-size: 11px; color: var(--text-secondary); margin-bottom: 1.25rem; flex-wrap: wrap; }
+  .holdings-list { background: var(--bg-primary); border-radius: var(--radius-lg); border: 0.5px solid var(--border); padding: 0 1rem; }
+  .holding-row { display: flex; align-items: center; justify-content: space-between; padding: 12px 0; border-bottom: 0.5px solid var(--border); }
+  .holding-row:last-child { border-bottom: none; }
+  .badge { display: inline-block; padding: 2px 7px; border-radius: 99px; font-size: 10px; font-weight: 600; text-transform: uppercase; }
+  .badge-b { background: var(--bg-success); color: var(--text-success); }
+  .badge-s { background: var(--bg-danger); color: var(--text-danger); }
+  .hist-list { background: var(--bg-primary); border-radius: var(--radius-lg); border: 0.5px solid var(--border); padding: 0 1rem; }
+  .hist-row { display: flex; justify-content: space-between; align-items: center; padding: 11px 0; border-bottom: 0.5px solid var(--border); }
+  .hist-row:last-child { border-bottom: none; }
+  .toast { position: fixed; bottom: 1.5rem; left: 50%; transform: translateX(-50%); padding: 10px 18px; border-radius: var(--radius-md); font-size: 13px; z-index: 200; display: none; white-space: nowrap; max-width: 90vw; }
+  .toast.show { display: block; animation: fadein 0.2s ease; }
+  .toast.ok { background: var(--bg-success); color: var(--text-success); border: 0.5px solid #1D9E75; }
+  .toast.err { background: var(--bg-danger); color: var(--text-danger); border: 0.5px solid #E24B4A; }
+  @keyframes fadein { from { opacity: 0; transform: translateX(-50%) translateY(8px); } to { opacity: 1; transform: translateX(-50%) translateY(0); } }
+  .empty { text-align: center; padding: 2.5rem; font-size: 14px; color: var(--text-secondary); }
+  .ex-tag { font-size: 10px; padding: 1px 5px; border-radius: 99px; background: var(--bg-secondary); color: var(--text-secondary); }
+</style>
+</head>
+<body>
+<div class="app">
+  <div id="toast" class="toast ok">Bought 35 shares of RELIANCE at ₹2,847.50 (Market)</div>
+
+  <div class="modal-overlay" id="modal-overlay">
+    <div class="modal" id="modal-box">
+    <div class="modal-hd">Sell RELIANCE</div>
+    <div class="modal-sub">Reliance Industries · NSE · ₹2,847.50 per share</div>
+    <div class="flabel">Order type</div>
+    <div class="order-type-row">
+      <div class="otype selected" onclick="setOrderType('Market')">Market</div><div class="otype" onclick="setOrderType('Limit')">Limit</div><div class="otype" onclick="setOrderType('SL')">SL</div>
+    </div>
+    <div class="flabel">Quantity (shares)</div>
+    <div class="qty-row">
+      <div class="qbtn" onclick="chgQty(-1)">−</div>
+      <div class="qval">1</div>
+      <div class="qbtn" onclick="chgQty(1)">+</div>
+    </div>
+    <div class="total-line">
+      <span style="font-size:13px;color:var(--text-secondary);">You receive</span>
+      <span style="font-size:16px;font-weight:600;">₹2,847.50</span>
+    </div>
+    <div class="avail">You own: 35 shares</div>
+    <button class="cfm-btn cfm-sell" onclick="executeTrade()">
+      Place sell order
+    </button>
+    <span class="cancel-lnk" onclick="closeModal()">Cancel</span>
+  </div>
+  </div>
+
+  <div class="header">
+    <div class="brand"><div class="brand-dot"></div>Bazaar</div>
+    <div class="header-right">
+      <span class="exchange-badge">NSE</span>
+      <span class="exchange-badge">BSE</span>
+      <span class="market-time" id="mtime">01:24 am IST</span>
+    </div>
+  </div>
+
+  <div class="index-bar">
+    <div class="index-card">
+      <div class="index-name">Nifty 50</div>
+      <div class="index-val">22,519</div>
+      <div class="index-chg up">+148.30 (0.66%)</div>
+    </div>
+    <div class="index-card">
+      <div class="index-name">Sensex</div>
+      <div class="index-val">74,115</div>
+      <div class="index-chg up">+495.12 (0.67%)</div>
+    </div>
+    <div class="index-card">
+      <div class="index-name">Bank Nifty</div>
+      <div class="index-val">48,240</div>
+      <div class="index-chg down">-112.45 (-0.23%)</div>
+    </div>
+  </div>
+
+  <div class="tab-bar">
+    <button class="tab active" onclick="switchTab('market')">Market</button>
+    <button class="tab" onclick="switchTab('portfolio')">Portfolio</button>
+    <button class="tab" onclick="switchTab('history')">History</button>
+  </div>
+
+  <!-- Market Tab -->
+  <div id="tab-market" class="section active">
+    <input class="search-bar" type="text" placeholder="Search stocks by name or ticker..." id="search-input" oninput="renderMarket()">
+    <div class="sector-pills" id="sector-pills"><div class="pill active" onclick="setSector('All')">All</div><div class="pill" onclick="setSector('Energy')">Energy</div><div class="pill" onclick="setSector('IT')">IT</div><div class="pill" onclick="setSector('Banking')">Banking</div><div class="pill" onclick="setSector('FMCG')">FMCG</div><div class="pill" onclick="setSector('NBFC')">NBFC</div><div class="pill" onclick="setSector('Auto')">Auto</div><div class="pill" onclick="setSector('Pharma')">Pharma</div><div class="pill" onclick="setSector('Utilities')">Utilities</div><div class="pill" onclick="setSector('Consumer')">Consumer</div><div class="pill" onclick="setSector('Infra')">Infra</div></div>
+    <div class="stock-list" id="stock-list"><div class="stock-row">
+      <div style="flex:1;min-width:0;">
+        <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;">
+          <span class="sticker">RELIANCE</span>
+          <span class="ex-tag">NSE</span>
+          <span style="font-size:10px;color:var(--text-secondary);">35 held</span>
+        </div>
+        <div class="sname">Reliance Industries</div>
+        <div class="ssector">Energy</div>
+      </div>
+      <div style="display:flex;align-items:center;">
+        <div style="margin-right:10px;">
+          <div class="sprice">₹2,847.50</div>
+          <div class="schg up">+1.24%</div>
+        </div>
+        <div class="action-btns">
+          <button class="btn-b" onclick="openModal('RELIANCE','buy')">Buy</button>
+          <button class="btn-s" onclick="openModal('RELIANCE','sell')">Sell</button>
+        </div>
+      </div>
+    </div><div class="stock-row">
+      <div style="flex:1;min-width:0;">
+        <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;">
+          <span class="sticker">TCS</span>
+          <span class="ex-tag">NSE</span>
+          
+        </div>
+        <div class="sname">Tata Consultancy Services</div>
+        <div class="ssector">IT</div>
+      </div>
+      <div style="display:flex;align-items:center;">
+        <div style="margin-right:10px;">
+          <div class="sprice">₹3,921.00</div>
+          <div class="schg down">-0.55%</div>
+        </div>
+        <div class="action-btns">
+          <button class="btn-b" onclick="openModal('TCS','buy')">Buy</button>
+          
+        </div>
+      </div>
+    </div><div class="stock-row">
+      <div style="flex:1;min-width:0;">
+        <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;">
+          <span class="sticker">HDFCBANK</span>
+          <span class="ex-tag">NSE</span>
+          
+        </div>
+        <div class="sname">HDFC Bank</div>
+        <div class="ssector">Banking</div>
+      </div>
+      <div style="display:flex;align-items:center;">
+        <div style="margin-right:10px;">
+          <div class="sprice">₹1,689.75</div>
+          <div class="schg up">+0.83%</div>
+        </div>
+        <div class="action-btns">
+          <button class="btn-b" onclick="openModal('HDFCBANK','buy')">Buy</button>
+          
+        </div>
+      </div>
+    </div><div class="stock-row">
+      <div style="flex:1;min-width:0;">
+        <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;">
+          <span class="sticker">INFY</span>
+          <span class="ex-tag">NSE</span>
+          
+        </div>
+        <div class="sname">Infosys</div>
+        <div class="ssector">IT</div>
+      </div>
+      <div style="display:flex;align-items:center;">
+        <div style="margin-right:10px;">
+          <div class="sprice">₹1,482.30</div>
+          <div class="schg up">+1.10%</div>
+        </div>
+        <div class="action-btns">
+          <button class="btn-b" onclick="openModal('INFY','buy')">Buy</button>
+          
+        </div>
+      </div>
+    </div><div class="stock-row">
+      <div style="flex:1;min-width:0;">
+        <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;">
+          <span class="sticker">ICICIBANK</span>
+          <span class="ex-tag">NSE</span>
+          
+        </div>
+        <div class="sname">ICICI Bank</div>
+        <div class="ssector">Banking</div>
+      </div>
+      <div style="display:flex;align-items:center;">
+        <div style="margin-right:10px;">
+          <div class="sprice">₹1,278.60</div>
+          <div class="schg down">-0.32%</div>
+        </div>
+        <div class="action-btns">
+          <button class="btn-b" onclick="openModal('ICICIBANK','buy')">Buy</button>
+          
+        </div>
+      </div>
+    </div><div class="stock-row">
+      <div style="flex:1;min-width:0;">
+        <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;">
+          <span class="sticker">HINDUNILVR</span>
+          <span class="ex-tag">BSE</span>
+          
+        </div>
+        <div class="sname">Hindustan Unilever</div>
+        <div class="ssector">FMCG</div>
+      </div>
+      <div style="display:flex;align-items:center;">
+        <div style="margin-right:10px;">
+          <div class="sprice">₹2,345.00</div>
+          <div class="schg up">+0.45%</div>
+        </div>
+        <div class="action-btns">
+          <button class="btn-b" onclick="openModal('HINDUNILVR','buy')">Buy</button>
+          
+        </div>
+      </div>
+    </div><div class="stock-row">
+      <div style="flex:1;min-width:0;">
+        <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;">
+          <span class="sticker">ITC</span>
+          <span class="ex-tag">NSE</span>
+          
+        </div>
+        <div class="sname">ITC Limited</div>
+        <div class="ssector">FMCG</div>
+      </div>
+      <div style="display:flex;align-items:center;">
+        <div style="margin-right:10px;">
+          <div class="sprice">₹432.15</div>
+          <div class="schg up">+0.91%</div>
+        </div>
+        <div class="action-btns">
+          <button class="btn-b" onclick="openModal('ITC','buy')">Buy</button>
+          
+        </div>
+      </div>
+    </div><div class="stock-row">
+      <div style="flex:1;min-width:0;">
+        <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;">
+          <span class="sticker">SBIN</span>
+          <span class="ex-tag">NSE</span>
+          
+        </div>
+        <div class="sname">State Bank of India</div>
+        <div class="ssector">Banking</div>
+      </div>
+      <div style="display:flex;align-items:center;">
+        <div style="margin-right:10px;">
+          <div class="sprice">₹798.40</div>
+          <div class="schg down">-1.20%</div>
+        </div>
+        <div class="action-btns">
+          <button class="btn-b" onclick="openModal('SBIN','buy')">Buy</button>
+          
+        </div>
+      </div>
+    </div><div class="stock-row">
+      <div style="flex:1;min-width:0;">
+        <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;">
+          <span class="sticker">BAJFINANCE</span>
+          <span class="ex-tag">NSE</span>
+          
+        </div>
+        <div class="sname">Bajaj Finance</div>
+        <div class="ssector">NBFC</div>
+      </div>
+      <div style="display:flex;align-items:center;">
+        <div style="margin-right:10px;">
+          <div class="sprice">₹7,124.00</div>
+          <div class="schg up">+2.10%</div>
+        </div>
+        <div class="action-btns">
+          <button class="btn-b" onclick="openModal('BAJFINANCE','buy')">Buy</button>
+          
+        </div>
+      </div>
+    </div><div class="stock-row">
+      <div style="flex:1;min-width:0;">
+        <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;">
+          <span class="sticker">WIPRO</span>
+          <span class="ex-tag">NSE</span>
+          
+        </div>
+        <div class="sname">Wipro</div>
+        <div class="ssector">IT</div>
+      </div>
+      <div style="display:flex;align-items:center;">
+        <div style="margin-right:10px;">
+          <div class="sprice">₹521.85</div>
+          <div class="schg down">-0.65%</div>
+        </div>
+        <div class="action-btns">
+          <button class="btn-b" onclick="openModal('WIPRO','buy')">Buy</button>
+          
+        </div>
+      </div>
+    </div><div class="stock-row">
+      <div style="flex:1;min-width:0;">
+        <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;">
+          <span class="sticker">TATAMOTORS</span>
+          <span class="ex-tag">NSE</span>
+          
+        </div>
+        <div class="sname">Tata Motors</div>
+        <div class="ssector">Auto</div>
+      </div>
+      <div style="display:flex;align-items:center;">
+        <div style="margin-right:10px;">
+          <div class="sprice">₹892.70</div>
+          <div class="schg up">+3.45%</div>
+        </div>
+        <div class="action-btns">
+          <button class="btn-b" onclick="openModal('TATAMOTORS','buy')">Buy</button>
+          
+        </div>
+      </div>
+    </div><div class="stock-row">
+      <div style="flex:1;min-width:0;">
+        <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;">
+          <span class="sticker">MARUTI</span>
+          <span class="ex-tag">NSE</span>
+          
+        </div>
+        <div class="sname">Maruti Suzuki</div>
+        <div class="ssector">Auto</div>
+      </div>
+      <div style="display:flex;align-items:center;">
+        <div style="margin-right:10px;">
+          <div class="sprice">₹12,480.00</div>
+          <div class="schg up">+1.88%</div>
+        </div>
+        <div class="action-btns">
+          <button class="btn-b" onclick="openModal('MARUTI','buy')">Buy</button>
+          
+        </div>
+      </div>
+    </div><div class="stock-row">
+      <div style="flex:1;min-width:0;">
+        <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;">
+          <span class="sticker">SUNPHARMA</span>
+          <span class="ex-tag">NSE</span>
+          
+        </div>
+        <div class="sname">Sun Pharmaceutical</div>
+        <div class="ssector">Pharma</div>
+      </div>
+      <div style="display:flex;align-items:center;">
+        <div style="margin-right:10px;">
+          <div class="sprice">₹1,648.20</div>
+          <div class="schg up">+0.72%</div>
+        </div>
+        <div class="action-btns">
+          <button class="btn-b" onclick="openModal('SUNPHARMA','buy')">Buy</button>
+          
+        </div>
+      </div>
+    </div><div class="stock-row">
+      <div style="flex:1;min-width:0;">
+        <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;">
+          <span class="sticker">DRREDDY</span>
+          <span class="ex-tag">BSE</span>
+          
+        </div>
+        <div class="sname">Dr. Reddy's Laboratories</div>
+        <div class="ssector">Pharma</div>
+      </div>
+      <div style="display:flex;align-items:center;">
+        <div style="margin-right:10px;">
+          <div class="sprice">₹5,724.00</div>
+          <div class="schg down">-0.44%</div>
+        </div>
+        <div class="action-btns">
+          <button class="btn-b" onclick="openModal('DRREDDY','buy')">Buy</button>
+          
+        </div>
+      </div>
+    </div><div class="stock-row">
+      <div style="flex:1;min-width:0;">
+        <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;">
+          <span class="sticker">ONGC</span>
+          <span class="ex-tag">NSE</span>
+          
+        </div>
+        <div class="sname">ONGC</div>
+        <div class="ssector">Energy</div>
+      </div>
+      <div style="display:flex;align-items:center;">
+        <div style="margin-right:10px;">
+          <div class="sprice">₹268.50</div>
+          <div class="schg up">+0.33%</div>
+        </div>
+        <div class="action-btns">
+          <button class="btn-b" onclick="openModal('ONGC','buy')">Buy</button>
+          
+        </div>
+      </div>
+    </div><div class="stock-row">
+      <div style="flex:1;min-width:0;">
+        <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;">
+          <span class="sticker">POWERGRID</span>
+          <span class="ex-tag">NSE</span>
+          
+        </div>
+        <div class="sname">Power Grid Corp.</div>
+        <div class="ssector">Utilities</div>
+      </div>
+      <div style="display:flex;align-items:center;">
+        <div style="margin-right:10px;">
+          <div class="sprice">₹318.90</div>
+          <div class="schg up">+1.05%</div>
+        </div>
+        <div class="action-btns">
+          <button class="btn-b" onclick="openModal('POWERGRID','buy')">Buy</button>
+          
+        </div>
+      </div>
+    </div><div class="stock-row">
+      <div style="flex:1;min-width:0;">
+        <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;">
+          <span class="sticker">TITAN</span>
+          <span class="ex-tag">NSE</span>
+          
+        </div>
+        <div class="sname">Titan Company</div>
+        <div class="ssector">Consumer</div>
+      </div>
+      <div style="display:flex;align-items:center;">
+        <div style="margin-right:10px;">
+          <div class="sprice">₹3,356.00</div>
+          <div class="schg up">+0.60%</div>
+        </div>
+        <div class="action-btns">
+          <button class="btn-b" onclick="openModal('TITAN','buy')">Buy</button>
+          
+        </div>
+      </div>
+    </div><div class="stock-row">
+      <div style="flex:1;min-width:0;">
+        <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;">
+          <span class="sticker">ADANIPORTS</span>
+          <span class="ex-tag">NSE</span>
+          
+        </div>
+        <div class="sname">Adani Ports</div>
+        <div class="ssector">Infra</div>
+      </div>
+      <div style="display:flex;align-items:center;">
+        <div style="margin-right:10px;">
+          <div class="sprice">₹1,245.80</div>
+          <div class="schg down">-0.90%</div>
+        </div>
+        <div class="action-btns">
+          <button class="btn-b" onclick="openModal('ADANIPORTS','buy')">Buy</button>
+          
+        </div>
+      </div>
+    </div><div class="stock-row">
+      <div style="flex:1;min-width:0;">
+        <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;">
+          <span class="sticker">LTIM</span>
+          <span class="ex-tag">NSE</span>
+          
+        </div>
+        <div class="sname">LTIMindtree</div>
+        <div class="ssector">IT</div>
+      </div>
+      <div style="display:flex;align-items:center;">
+        <div style="margin-right:10px;">
+          <div class="sprice">₹5,142.00</div>
+          <div class="schg up">+1.33%</div>
+        </div>
+        <div class="action-btns">
+          <button class="btn-b" onclick="openModal('LTIM','buy')">Buy</button>
+          
+        </div>
+      </div>
+    </div><div class="stock-row">
+      <div style="flex:1;min-width:0;">
+        <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;">
+          <span class="sticker">COALINDIA</span>
+          <span class="ex-tag">NSE</span>
+          
+        </div>
+        <div class="sname">Coal India</div>
+        <div class="ssector">Energy</div>
+      </div>
+      <div style="display:flex;align-items:center;">
+        <div style="margin-right:10px;">
+          <div class="sprice">₹412.35</div>
+          <div class="schg down">-0.18%</div>
+        </div>
+        <div class="action-btns">
+          <button class="btn-b" onclick="openModal('COALINDIA','buy')">Buy</button>
+          
+        </div>
+      </div>
+    </div></div>
+  </div>
+
+  <!-- Portfolio Tab -->
+  <div id="tab-portfolio" class="section">
+    <div class="metrics">
+      <div class="metric"><div class="mlabel">Available cash</div><div class="mval" id="cash2">₹337.50</div></div>
+      <div class="metric"><div class="mlabel">Portfolio value</div><div class="mval" id="portval">₹99,662.50</div></div>
+      <div class="metric"><div class="mlabel">Total invested</div><div class="mval" id="invested">₹99,662.50</div></div>
+      <div class="metric"><div class="mlabel">Overall P&amp;L</div><div class="mval" id="pnl" style="color: var(--text-success);">+₹0</div></div>
+    </div>
+    <div class="chart-wrap"><canvas id="portChart" width="688" height="200" style="display: block; box-sizing: border-box; height: 200px; width: 688px;"></canvas></div>
+    <div class="port-legend" id="portLegend"><span style="display:flex;align-items:center;gap:4px;"><span style="width:8px;height:8px;border-radius:2px;background:#1D9E75;display:inline-block;"></span>RELIANCE</span></div>
+    <div class="holdings-list" id="holdings-list"><div class="holding-row">
+      <div>
+        <div style="font-weight:600;font-size:14px;">RELIANCE</div>
+        <div class="sname">35 shares · avg ₹2,847.50</div>
+        <div class="ssector">Energy</div>
+      </div>
+      <div style="text-align:right;">
+        <div style="font-size:14px;font-weight:600;">₹99,662.50</div>
+        <div class="up" style="font-size:11px;">+₹0 (+0.00%)</div>
+        <button class="btn-s" style="margin-top:5px;font-size:10px;padding:3px 9px;" onclick="openModal('RELIANCE','sell')">Sell</button>
+      </div>
+    </div></div>
+  </div>
+
+  <!-- History Tab -->
+  <div id="tab-history" class="section">
+    <div class="hist-list" id="history-list"></div>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<script>
+const STOCKS = [
+  { t:'RELIANCE',    n:'Reliance Industries',          p:2847.50, c:+1.24, s:'Energy',    ex:'NSE' },
+  { t:'TCS',         n:'Tata Consultancy Services',    p:3921.00, c:-0.55, s:'IT',         ex:'NSE' },
+  { t:'HDFCBANK',    n:'HDFC Bank',                    p:1689.75, c:+0.83, s:'Banking',   ex:'NSE' },
+  { t:'INFY',        n:'Infosys',                      p:1482.30, c:+1.10, s:'IT',         ex:'NSE' },
+  { t:'ICICIBANK',   n:'ICICI Bank',                   p:1278.60, c:-0.32, s:'Banking',   ex:'NSE' },
+  { t:'HINDUNILVR',  n:'Hindustan Unilever',           p:2345.00, c:+0.45, s:'FMCG',      ex:'BSE' },
+  { t:'ITC',         n:'ITC Limited',                  p:432.15,  c:+0.91, s:'FMCG',      ex:'NSE' },
+  { t:'SBIN',        n:'State Bank of India',          p:798.40,  c:-1.20, s:'Banking',   ex:'NSE' },
+  { t:'BAJFINANCE',  n:'Bajaj Finance',                p:7124.00, c:+2.10, s:'NBFC',      ex:'NSE' },
+  { t:'WIPRO',       n:'Wipro',                        p:521.85,  c:-0.65, s:'IT',         ex:'NSE' },
+  { t:'TATAMOTORS',  n:'Tata Motors',                  p:892.70,  c:+3.45, s:'Auto',      ex:'NSE' },
+  { t:'MARUTI',      n:'Maruti Suzuki',                p:12480.00,c:+1.88, s:'Auto',      ex:'NSE' },
+  { t:'SUNPHARMA',   n:'Sun Pharmaceutical',           p:1648.20, c:+0.72, s:'Pharma',    ex:'NSE' },
+  { t:'DRREDDY',     n:"Dr. Reddy's Laboratories",     p:5724.00, c:-0.44, s:'Pharma',    ex:'BSE' },
+  { t:'ONGC',        n:'ONGC',                         p:268.50,  c:+0.33, s:'Energy',    ex:'NSE' },
+  { t:'POWERGRID',   n:'Power Grid Corp.',             p:318.90,  c:+1.05, s:'Utilities', ex:'NSE' },
+  { t:'TITAN',       n:'Titan Company',                p:3356.00, c:+0.60, s:'Consumer',  ex:'NSE' },
+  { t:'ADANIPORTS',  n:'Adani Ports',                  p:1245.80, c:-0.90, s:'Infra',     ex:'NSE' },
+  { t:'LTIM',        n:'LTIMindtree',                  p:5142.00, c:+1.33, s:'IT',         ex:'NSE' },
+  { t:'COALINDIA',   n:'Coal India',                   p:412.35,  c:-0.18, s:'Energy',    ex:'NSE' },
+];
+
+let cash = 100000;
+let holdings = {};
+let history = [];
+let activeSector = 'All';
+let activeModal = null;
+let mQty = 1;
+let orderType = 'Market';
+let portChart = null;
+
+const sectors = ['All', ...new Set(STOCKS.map(s => s.s))];
+const CHART_COLORS = ['#1D9E75','#378ADD','#D85A30','#BA7517','#D4537E','#639922','#7F77DD','#888780','#5DCAA5','#EF9F27'];
+
+const fmt = n => '₹' + n.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+
+function setTime() {
+  const now = new Date();
+  document.getElementById('mtime').textContent = now.toLocaleTimeString('en-IN', { hour:'2-digit', minute:'2-digit', timeZone:'Asia/Kolkata' }) + ' IST';
+}
+setTime(); setInterval(setTime, 30000);
+
+function switchTab(name) {
+  document.querySelectorAll('.tab').forEach((t,i) => t.classList.toggle('active', ['market','portfolio','history'][i] === name));
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.getElementById('tab-' + name).classList.add('active');
+  if (name === 'market') renderMarket();
+  if (name === 'portfolio') renderPortfolio();
+  if (name === 'history') renderHistory();
+}
+
+function renderSectorPills() {
+  document.getElementById('sector-pills').innerHTML = sectors.map(s =>
+    `<div class="pill${activeSector===s?' active':''}" onclick="setSector('${s}')">${s}</div>`
+  ).join('');
+}
+
+function setSector(s) { activeSector = s; renderSectorPills(); renderMarket(); }
+
+function renderMarket() {
+  renderSectorPills();
+  const q = document.getElementById('search-input').value.toLowerCase();
+  const filtered = STOCKS.filter(s => {
+    const matchSec = activeSector === 'All' || s.s === activeSector;
+    const matchQ = !q || s.t.toLowerCase().includes(q) || s.n.toLowerCase().includes(q);
+    return matchSec && matchQ;
+  });
+  const list = document.getElementById('stock-list');
+  if (!filtered.length) { list.innerHTML = '<div class="empty">No stocks found.</div>'; return; }
+  list.innerHTML = filtered.map(s => {
+    const up = s.c >= 0;
+    const held = holdings[s.t] ? holdings[s.t].qty : 0;
+    return `<div class="stock-row">
+      <div style="flex:1;min-width:0;">
+        <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;">
+          <span class="sticker">${s.t}</span>
+          <span class="ex-tag">${s.ex}</span>
+          ${held > 0 ? `<span style="font-size:10px;color:var(--text-secondary);">${held} held</span>` : ''}
+        </div>
+        <div class="sname">${s.n}</div>
+        <div class="ssector">${s.s}</div>
+      </div>
+      <div style="display:flex;align-items:center;">
+        <div style="margin-right:10px;">
+          <div class="sprice">${fmt(s.p)}</div>
+          <div class="schg ${up?'up':'down'}">${up?'+':''}${s.c.toFixed(2)}%</div>
+        </div>
+        <div class="action-btns">
+          <button class="btn-b" onclick="openModal('${s.t}','buy')">Buy</button>
+          ${held > 0 ? `<button class="btn-s" onclick="openModal('${s.t}','sell')">Sell</button>` : ''}
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function openModal(ticker, action) {
+  activeModal = { ticker, action }; mQty = 1; orderType = 'Market';
+  renderModal();
+  document.getElementById('modal-overlay').classList.add('show');
+}
+
+function renderModal() {
+  if (!activeModal) return;
+  const { ticker, action } = activeModal;
+  const stk = STOCKS.find(s => s.t === ticker);
+  const held = holdings[ticker] ? holdings[ticker].qty : 0;
+  const isBuy = action === 'buy';
+  const total = stk.p * mQty;
+  document.getElementById('modal-box').innerHTML = `
+    <div class="modal-hd">${isBuy ? 'Buy' : 'Sell'} ${ticker}</div>
+    <div class="modal-sub">${stk.n} &middot; ${stk.ex} &middot; ${fmt(stk.p)} per share</div>
+    <div class="flabel">Order type</div>
+    <div class="order-type-row">
+      ${['Market','Limit','SL'].map(o => `<div class="otype${orderType===o?' selected':''}" onclick="setOrderType('${o}')">${o}</div>`).join('')}
+    </div>
+    <div class="flabel">Quantity (shares)</div>
+    <div class="qty-row">
+      <div class="qbtn" onclick="chgQty(-1)">−</div>
+      <div class="qval">${mQty}</div>
+      <div class="qbtn" onclick="chgQty(1)">+</div>
+    </div>
+    <div class="total-line">
+      <span style="font-size:13px;color:var(--text-secondary);">${isBuy ? 'Total cost' : 'You receive'}</span>
+      <span style="font-size:16px;font-weight:600;">${fmt(total)}</span>
+    </div>
+    <div class="avail">${isBuy ? `Available cash: ${fmt(cash)}` : `You own: ${held} share${held!==1?'s':''}`}</div>
+    <button class="cfm-btn ${isBuy?'cfm-buy':'cfm-sell'}" onclick="executeTrade()">
+      ${isBuy ? 'Place buy order' : 'Place sell order'}
+    </button>
+    <span class="cancel-lnk" onclick="closeModal()">Cancel</span>
+  `;
+}
+
+function setOrderType(o) { orderType = o; renderModal(); }
+function chgQty(d) { mQty = Math.max(1, mQty + d); renderModal(); }
+function closeModal() { document.getElementById('modal-overlay').classList.remove('show'); activeModal = null; }
+
+document.getElementById('modal-overlay').addEventListener('click', function(e) {
+  if (e.target === this) closeModal();
+});
+
+function executeTrade() {
+  const { ticker, action } = activeModal;
+  const stk = STOCKS.find(s => s.t === ticker);
+  const total = stk.p * mQty;
+  const isBuy = action === 'buy';
+  if (isBuy) {
+    if (total > cash) { showToast('Insufficient funds.', 'err'); return; }
+    cash -= total;
+    if (!holdings[ticker]) holdings[ticker] = { qty: 0, avgCost: 0, sector: stk.s, name: stk.n };
+    const h = holdings[ticker];
+    h.avgCost = (h.avgCost * h.qty + total) / (h.qty + mQty);
+    h.qty += mQty;
+  } else {
+    const held = holdings[ticker] ? holdings[ticker].qty : 0;
+    if (mQty > held) { showToast('Not enough shares.', 'err'); return; }
+    cash += total;
+    holdings[ticker].qty -= mQty;
+    if (holdings[ticker].qty === 0) delete holdings[ticker];
+  }
+  history.unshift({ ticker, action, qty: mQty, price: stk.p, total, orderType,
+    time: new Date().toLocaleTimeString('en-IN', { hour:'2-digit', minute:'2-digit', timeZone:'Asia/Kolkata' }) });
+  closeModal();
+  showToast(`${isBuy?'Bought':'Sold'} ${mQty} share${mQty!==1?'s':''} of ${ticker} at ${fmt(stk.p)} (${orderType})`, 'ok');
+  renderMarket();
+}
+
+function renderPortfolio() {
+  const keys = Object.keys(holdings);
+  let totalVal = 0, totalCost = 0;
+  keys.forEach(t => {
+    const stk = STOCKS.find(s => s.t === t);
+    totalVal += stk.p * holdings[t].qty;
+    totalCost += holdings[t].avgCost * holdings[t].qty;
+  });
+  const pnl = totalVal - totalCost;
+  document.getElementById('cash2').textContent = fmt(cash);
+  document.getElementById('portval').textContent = fmt(totalVal);
+  document.getElementById('invested').textContent = fmt(totalCost);
+  const pnlEl = document.getElementById('pnl');
+  pnlEl.textContent = (pnl >= 0 ? '+' : '-') + '₹' + Math.abs(pnl).toFixed(0);
+  pnlEl.style.color = pnl >= 0 ? 'var(--text-success)' : 'var(--text-danger)';
+
+  if (keys.length > 0) {
+    const labels = keys;
+    const vals = keys.map(t => { const stk = STOCKS.find(s => s.t === t); return Math.round(stk.p * holdings[t].qty); });
+    const bgColors = keys.map((_, i) => CHART_COLORS[i % CHART_COLORS.length]);
+    document.getElementById('portLegend').innerHTML = labels.map((l, i) =>
+      `<span style="display:flex;align-items:center;gap:4px;"><span style="width:8px;height:8px;border-radius:2px;background:${bgColors[i]};display:inline-block;"></span>${l}</span>`
+    ).join('');
+    if (portChart) portChart.destroy();
+    portChart = new Chart(document.getElementById('portChart'), {
+      type: 'doughnut',
+      data: { labels, datasets: [{ data: vals, backgroundColor: bgColors, borderWidth: 0 }] },
+      options: { responsive: true, maintainAspectRatio: false, cutout: '65%',
+        plugins: { legend: { display: false }, tooltip: { callbacks: { label: ctx => ' ' + fmt(ctx.parsed) } } } }
+    });
+  } else {
+    document.getElementById('portLegend').innerHTML = '';
+    if (portChart) { portChart.destroy(); portChart = null; }
+  }
+
+  const list = document.getElementById('holdings-list');
+  if (!keys.length) { list.innerHTML = '<div class="empty">No holdings yet. Head to Market to buy stocks.</div>'; return; }
+  list.innerHTML = keys.map(ticker => {
+    const stk = STOCKS.find(s => s.t === ticker);
+    const h = holdings[ticker];
+    const val = stk.p * h.qty;
+    const cost = h.avgCost * h.qty;
+    const pnl = val - cost;
+    const up = pnl >= 0;
+    return `<div class="holding-row">
+      <div>
+        <div style="font-weight:600;font-size:14px;">${ticker}</div>
+        <div class="sname">${h.qty} shares &middot; avg ${fmt(h.avgCost)}</div>
+        <div class="ssector">${h.sector}</div>
+      </div>
+      <div style="text-align:right;">
+        <div style="font-size:14px;font-weight:600;">${fmt(val)}</div>
+        <div class="${up?'up':'down'}" style="font-size:11px;">${up?'+':'-'}₹${Math.abs(pnl).toFixed(0)} (${up?'+':''}${((pnl/cost)*100).toFixed(2)}%)</div>
+        <button class="btn-s" style="margin-top:5px;font-size:10px;padding:3px 9px;" onclick="openModal('${ticker}','sell')">Sell</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function renderHistory() {
+  const list = document.getElementById('history-list');
+  if (!history.length) { list.innerHTML = '<div class="empty">No trades yet.</div>'; return; }
+  list.innerHTML = history.map(h => `
+    <div class="hist-row">
+      <div style="display:flex;align-items:center;gap:7px;flex-wrap:wrap;">
+        <span class="badge ${h.action==='buy'?'badge-b':'badge-s'}">${h.action}</span>
+        <span style="font-weight:600;font-size:13px;">${h.qty} ${h.ticker}</span>
+        <span class="ex-tag">${h.orderType}</span>
+      </div>
+      <div style="text-align:right;">
+        <div style="font-weight:600;font-size:13px;">${fmt(h.total)}</div>
+        <div style="font-size:11px;color:var(--text-secondary);">${fmt(h.price)}/sh &middot; ${h.time}</div>
+      </div>
+    </div>`).join('');
+}
+
+function showToast(msg, type) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.className = 'toast show ' + type;
+  setTimeout(() => t.classList.remove('show'), 3500);
+}
+
+renderMarket();
+</script>
+
+
+</body></html>
