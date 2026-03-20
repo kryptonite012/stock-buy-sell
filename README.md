@@ -154,12 +154,152 @@ let cash = 100000;
 - [ ] Export trade history as CSV
 - [ ] Watchlist tab
 
----
+Bazaar is a self-contained paper trading simulator for Indian equity markets. It ships as a single HTML file — no build tools, no npm, no server. Drop it in a folder, open it, and start trading.
+It covers 20 large-cap Indian stocks across 9 sectors — from Reliance and TCS to Titan and Coal India — with a portfolio tracker, doughnut allocation chart, per-holding P&L, and full trade history. Think of it as a fast, frictionless way to learn how equity trading works without risking real money.
 
-## License
+Features
+📈 Trading
 
-MIT — free to use, modify, and distribute.
+Buy and sell across 20 NSE & BSE stocks
+Three order types — Market, Limit, Stop-Loss
+Clean order modal with +/− quantity controls and real-time total cost display
+Sells are gated — you can only sell what you hold
 
----
+💼 Portfolio
 
-> Built as a frontend project to demonstrate a clean, dependency-light trading UI using real Indian market stocks.
+Live doughnut chart showing allocation by stock value
+Per-position breakdown: shares held · average cost · current value · unrealised P&L (₹ and %)
+Sell directly from the Portfolio tab
+
+📊 Market
+
+Sector filter — Banking, IT, FMCG, Pharma, Auto, and more
+Live stock search by name or ticker
+NIFTY 50, SENSEX, Bank NIFTY index bar at the top
+
+🕐 History
+
+Every trade logged: ticker · order type · quantity · price · total · timestamp in IST
+
+🎨 UI/UX
+
+Dark mode via CSS custom properties — no flash, no JS required
+Fully responsive — works on mobile and desktop
+No external fonts or icon packs loaded
+
+
+Getting Started
+bash# Option 1 — Clone
+git clone https://github.com/your-username/bazaar.git
+cd bazaar
+open bazaar.html          # macOS
+start bazaar.html         # Windows
+xdg-open bazaar.html      # Linux
+
+# Option 2 — Download
+# Download bazaar.html from Releases → open in any browser
+That's it. No npm install. No build step. No server. No .env file.
+Browser compatibility: Chrome 90+, Firefox 88+, Safari 14+, Edge 90+
+
+How It Works
+Starting balance
+Every session begins with ₹1,00,000 in virtual cash.
+Placing a buy order
+
+Go to the Market tab
+Search by ticker or filter by sector
+Click Buy on any stock
+In the modal — select order type, adjust quantity with +/− buttons, review total cost
+Click Place buy order — your cash is debited, the holding appears in Portfolio
+
+Placing a sell order
+A Sell button appears on any stock you hold — both in the Market tab and the Portfolio tab. The modal shows your average buy price alongside the current price so you can see your P&L before confirming.
+Order types
+TypeBehaviour in this versionMarketExecutes immediately at the listed priceLimitUI label only — executes at listed priceSL (Stop-Loss)UI label only — executes at listed price
+Functional limit and SL logic is on the roadmap.
+P&L calculation
+Unrealised P&L  =  (Current Price − Average Buy Price) × Shares Held
+P&L %           =  (Unrealised P&L / Total Cost Basis) × 100
+Average buy price is recalculated on each subsequent buy using a weighted average.
+
+Stock Universe
+20 large-cap Indian stocks across 9 sectors:
+TickerCompanySectorExchangeRELIANCEReliance IndustriesEnergyNSEONGCONGCEnergyNSECOALINDIACoal IndiaEnergyNSETCSTata Consultancy ServicesITNSEINFYInfosysITNSEWIPROWiproITNSELTIMLTIMindtreeITNSEHDFCBANKHDFC BankBankingNSEICICIBANKICICI BankBankingNSESBINState Bank of IndiaBankingNSEBAJFINANCEBajaj FinanceNBFCNSEHINDUNILVRHindustan UnileverFMCGBSEITCITC LimitedFMCGNSETATAMOTORSTata MotorsAutoNSEMARUTIMaruti SuzukiAutoNSESUNPHARMASun PharmaceuticalPharmaNSEDRREDDYDr. Reddy's LaboratoriesPharmaBSEPOWERGRIDPower Grid Corp.UtilitiesNSETITANTitan CompanyConsumerNSEADANIPORTSAdani PortsInfraNSE
+
+Project Structure
+bazaar/
+├── bazaar.html      ← entire app (HTML + CSS + JS in one file)
+└── README.md
+Inside bazaar.html
+bazaar.html
+├── <head>           CSS custom properties (light + dark theme tokens)
+├── <body>
+│   ├── Index bar    NIFTY 50 · SENSEX · Bank NIFTY
+│   ├── Tabs         Market / Portfolio / History
+│   ├── Market tab   Search · Sector filter · Stock cards
+│   ├── Portfolio tab Doughnut chart · Holdings table
+│   └── History tab  Trade log
+└── <script>
+    ├── STOCKS[]     Stock data array (edit this to customise)
+    ├── State        cash · holdings · trades
+    └── Functions    render* · placeOrder · updatePortfolio
+
+Tech Stack
+ConcernChoiceWhyMarkupHTML5Single-file portabilityStylingCSS3 + custom propertiesZero-JS theming, light/dark modeLogicVanilla JS (ES6+)No build toolchain, instant loadChartsChart.js 4.4.1 via CDNBest-in-class canvas charts, small footprint
+No frameworks. No bundler. No transpilation. The entire app is human-readable source.
+
+Customisation
+Adding or editing stocks
+All stock data lives in the STOCKS array near the top of the <script> block:
+jsconst STOCKS = [
+  { t: 'INFY',  n: 'Infosys',              p: 1482.30, c: +1.10, s: 'IT',      ex: 'NSE' },
+  { t: 'SBIN',  n: 'State Bank of India',  p:  812.45, c: -0.35, s: 'Banking', ex: 'NSE' },
+  // add your own below ↓
+  { t: 'NYKAA', n: 'FSN E-Commerce',       p:  178.90, c: +2.45, s: 'Consumer',ex: 'NSE' },
+];
+KeyTypeDescriptiontstringTicker symbol (e.g. 'RELIANCE')nstringCompany display namepnumberPrice in ₹cnumberDaily change in % (positive or negative)sstringSector — used by the filter dropdownexstringExchange — 'NSE' or 'BSE'
+Changing the starting cash
+Find this line in the <script> block and update the value:
+jslet cash = 100000;   // ← change to any amount (in ₹)
+Persisting state across refreshes
+Bazaar resets on every page refresh. To make trades persist, wrap the state variables in localStorage:
+js// Save
+localStorage.setItem('bazaar_state', JSON.stringify({ cash, holdings, trades }));
+
+// Load on startup
+const saved = JSON.parse(localStorage.getItem('bazaar_state') || 'null');
+if (saved) { cash = saved.cash; holdings = saved.holdings; trades = saved.trades; }
+Simulating price movement
+Prices are static by default. To add random fluctuation, drop this snippet into the script:
+jssetInterval(() => {
+  STOCKS.forEach(stock => {
+    const delta = (Math.random() - 0.499) * 0.4;   // ±0.2% per tick
+    stock.p = parseFloat((stock.p * (1 + delta / 100)).toFixed(2));
+  });
+  renderMarket();
+  renderPortfolio();
+}, 3000);   // every 3 seconds
+
+Limitations
+LimitationDetailStatic pricesPrices do not update. This is a simulator, not a live feed.No persistenceRefreshing the page resets all state. See Customisation for localStorage tips.Cosmetic order typesMarket, Limit, and SL all execute at the same listed price.No fractional sharesQuantity is always a whole number.Not financial adviceFor educational and learning purposes only.
+
+Roadmap
+
+ localStorage persistence — state survives page refresh
+ Simulated real-time price fluctuations with configurable volatility
+ Functional limit orders — queue and execute when price is hit
+ Functional stop-loss — auto-sell when price drops below trigger
+ Candlestick mini-charts per stock (simulated OHLC)
+ Export trade history as CSV
+ Watchlist tab — track stocks without buying
+ Brokerage fee simulation (₹20 flat or percentage)
+ Portfolio performance graph over time
+ Multi-session leaderboard via localStorage
+
+
+Contributing
+Pull requests are welcome. For major changes, open an issue first to discuss what you'd like to change.
+bashgit clone https://github.com/your-username/bazaar.git
+# Edit bazaar.html in any text editor
+# Test in browser — no build step needed
+# Open a PR
