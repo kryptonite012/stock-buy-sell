@@ -303,3 +303,25 @@ bashgit clone https://github.com/your-username/bazaar.git
 # Edit bazaar.html in any text editor
 # Test in browser — no build step needed
 # Open a PR
+
+🚀 Live Features
+💹 Real-time price simulation
+🛒 Buy & Sell stocks (Market, Limit, Stop-Loss orders)
+📊 Portfolio tracking with P&L analytics
+⭐ Watchlist management
+📜 Trade history with CSV export
+📉 Interactive charts using Chart.js
+🌙 Dark / Light theme toggle
+💾 LocalStorage-based persistence
+
+🧠 Key Concepts Implemented
+DOM Manipulation
+Event Handling
+State Management (LocalStorage)
+Financial Calculations (P&L, Avg Price)
+Chart Visualization
+Order Execution Logic (Market + Pending Orders)
+🖥️ Tech Stack
+Frontend: HTML5, CSS3, JavaScript (Vanilla)
+Charts: Chart.js
+Storage: Browser LocalStorage
