@@ -32,8 +32,7 @@ Open `bazaar.html` directly in your browser. That's it.
 # Clone the repo
 git clone https://github.com/your-username/bazaar.git
 
-# Open in browser
-open bazaar.html
+
 ```
 
 No npm install. No build step. No server needed.
