@@ -2,7 +2,6 @@
 
 A lightweight, single-file paper trading app for Indian stocks. Built with plain HTML, CSS, and JavaScript — no frameworks, no backend, no setup required.
 
-![HTML](https://img.shields.io/badge/HTML-single%20file-orange) ![License](https://img.shields.io/badge/license-MIT-blue) ![No dependencies](https://img.shields.io/badge/dependencies-none-brightgreen)
 
 ---
 
