@@ -7,7 +7,15 @@ A lightweight, single-file paper trading app for Indian stocks. Built with plain
 
 ## Demo
 
-Open `bazaar.html` directly in your browser. That's it.
+Open `index.html` directly in your browser. That's it.
+
+Three versions are included:
+
+| File | What it is |
+|---|---|
+| `index.html` | Full version: live simulation, watchlist, pending limit/stop-loss orders, sparklines, portfolio and performance charts, ticker, light/dark theme |
+| `classic.html` | The original single-page version |
+| `lite.html` | A lighter variant with sector pills and an allocation chart |
 
 ---
 
@@ -29,12 +37,23 @@ Open `bazaar.html` directly in your browser. That's it.
 ## Getting Started
 ```bash
 # Clone the repo
-git clone https://github.com/your-username/bazaar.git
+git clone https://github.com/kryptonite012/stock-buy-sell.git
 
 
 ```
 
 No npm install. No build step. No server needed.
+
+---
+
+## Deploy
+
+This repository includes a GitHub Pages workflow (`.github/workflows/pages.yml`).
+
+1. Go to **Settings → Pages** and set **Source** to **GitHub Actions**.
+2. Push to the default branch. The site is published at `https://<username>.github.io/stock-buy-sell/`.
+
+Any static host (Netlify, Vercel, Cloudflare Pages) also works: publish the repository root with no build command.
 
 ---
 
@@ -94,7 +113,10 @@ Every trade is logged with ticker, order type, quantity, price per share, total 
 ## Project Structure
 ```
 bazaar/
-└── bazaar.html      # Entire app — HTML, CSS, and JS in one file
+├── index.html       # Main app — HTML, CSS, and JS in one file
+├── classic.html     # Original version
+├── lite.html        # Lite version
+└── .github/workflows/pages.yml  # GitHub Pages deployment
 └── README.md
 ```
 
@@ -113,7 +135,7 @@ bazaar/
 
 ## Customisation
 
-All stock data lives in the `STOCKS` array near the top of the `<script>` block in `bazaar.html`. Each entry looks like this:
+All stock data lives in the `STOCKS` array near the top of the `<script>` block in `index.html`. Each entry looks like this:
 ```js
 { t:'INFY', n:'Infosys', p:1482.30, c:+1.10, s:'IT', ex:'NSE' }
 ```
@@ -188,14 +210,14 @@ No external fonts or icon packs loaded
 
 Getting Started
 bash# Option 1 — Clone
-git clone https://github.com/your-username/bazaar.git
-cd bazaar
-open bazaar.html          # macOS
-start bazaar.html         # Windows
-xdg-open bazaar.html      # Linux
+git clone https://github.com/kryptonite012/stock-buy-sell.git
+cd stock-buy-sell
+open index.html          # macOS
+start index.html         # Windows
+xdg-open index.html      # Linux
 
 # Option 2 — Download
-# Download bazaar.html from Releases → open in any browser
+# Download index.html → open in any browser
 That's it. No npm install. No build step. No server. No .env file.
 Browser compatibility: Chrome 90+, Firefox 88+, Safari 14+, Edge 90+
 
@@ -226,10 +248,9 @@ TickerCompanySectorExchangeRELIANCEReliance IndustriesEnergyNSEONGCONGCEnergyNSE
 
 Project Structure
 bazaar/
-├── bazaar.html      ← entire app (HTML + CSS + JS in one file)
+├── index.html       ← main app (HTML + CSS + JS in one file)
 └── README.md
-Inside bazaar.html
-bazaar.html
+Inside index.html
 ├── <head>           CSS custom properties (light + dark theme tokens)
 ├── <body>
 │   ├── Index bar    NIFTY 50 · SENSEX · Bank NIFTY
@@ -297,8 +318,8 @@ Roadmap
 
 Contributing
 Pull requests are welcome. For major changes, open an issue first to discuss what you'd like to change.
-bashgit clone https://github.com/your-username/bazaar.git
-# Edit bazaar.html in any text editor
+git clone https://github.com/kryptonite012/stock-buy-sell.git
+# Edit index.html in any text editor
 # Test in browser — no build step needed
 # Open a PR
 
@@ -323,3 +344,8 @@ Order Execution Logic (Market + Pending Orders)
 Frontend: HTML5, CSS3, JavaScript (Vanilla)
 Charts: Chart.js
 Storage: Browser LocalStorage
+
+
+---
+
+> **Disclaimer:** Bazaar is an educational paper-trading simulator. Prices are simulated, no real money is involved, and nothing here is investment advice.

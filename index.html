@@ -3,7 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Bazaar — a paper-trading simulator for Indian NSE/BSE stocks with market, limit and stop-loss orders, watchlist, portfolio charts and history.">
 <title>Bazaar — Indian Stock Simulator</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📈</text></svg>">
 <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@300;400;500&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 <style>
@@ -543,7 +545,7 @@ function loadState(){
 function saveState(){
   const prices={},changes={};
   STOCKS.forEach(s=>{prices[s.t]=s.p;changes[s.t]=s.c;});
-  localStorage.setItem('bazar_v3',JSON.stringify({cash,holdings,trades,pending,watchlist,perfHist,prices,changes}));
+  try{localStorage.setItem('bazar_v3',JSON.stringify({cash,holdings,trades,pending,watchlist,perfHist,prices,changes}));}catch(e){}
 }
 loadState();
 
@@ -994,10 +996,10 @@ document.getElementById('themeBtn').addEventListener('click',()=>{
   const isDark=document.documentElement.getAttribute('data-theme')==='dark';
   document.documentElement.setAttribute('data-theme',isDark?'light':'dark');
   document.getElementById('themeBtn').textContent=isDark?'🌙':'☀';
-  localStorage.setItem('bazar_theme',isDark?'light':'dark');
+  try{localStorage.setItem('bazar_theme',isDark?'light':'dark');}catch(e){}
   if(document.getElementById('tab-portfolio').classList.contains('active'))setTimeout(renderPortfolio,50);
 });
-const st=localStorage.getItem('bazar_theme');
+let st=null;try{st=localStorage.getItem('bazar_theme');}catch(e){}
 if(st){document.documentElement.setAttribute('data-theme',st);document.getElementById('themeBtn').textContent=st==='light'?'🌙':'☀';}
 
 /* ─── RESET ────────────────────────────────────────────────── */
@@ -1010,7 +1012,7 @@ function resetAll(){
     priceHist[s.t][19]=s.p;
   });
   idxVals.forEach((_,i)=>idxVals[i]=idxBase[i]);
-  localStorage.removeItem('bazar_v3');
+  try{localStorage.removeItem('bazar_v3');}catch(e){}
   updateBadges();renderMarket();buildTicker();
   showToast('↺','Portfolio reset to ₹1,00,000');
 }
@@ -1029,5 +1031,6 @@ function showToast(icon,msg){
 updateBadges();
 renderMarket();
 </script>
+<footer style="text-align:center;font-size:12px;opacity:.7;padding:24px 16px 32px">Educational paper-trading simulator: prices are simulated and no real money is involved. Not investment advice. · <a href="classic.html" style="color:inherit">Classic version</a> · <a href="lite.html" style="color:inherit">Lite version</a></footer>
 </body>
 </html>

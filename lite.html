@@ -1,9 +1,8 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
+<html lang="en"><head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Bazaar — Indian Stock Brokerage</title>
+<title>Bazaar Lite — Indian Stock Brokerage</title>
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
   :root {
@@ -122,10 +121,32 @@
 </head>
 <body>
 <div class="app">
-  <div id="toast" class="toast"></div>
+  <div id="toast" class="toast ok">Bought 35 shares of RELIANCE at ₹2,847.50 (Market)</div>
 
   <div class="modal-overlay" id="modal-overlay">
-    <div class="modal" id="modal-box"></div>
+    <div class="modal" id="modal-box">
+    <div class="modal-hd">Sell RELIANCE</div>
+    <div class="modal-sub">Reliance Industries · NSE · ₹2,847.50 per share</div>
+    <div class="flabel">Order type</div>
+    <div class="order-type-row">
+      <div class="otype selected" onclick="setOrderType('Market')">Market</div><div class="otype" onclick="setOrderType('Limit')">Limit</div><div class="otype" onclick="setOrderType('SL')">SL</div>
+    </div>
+    <div class="flabel">Quantity (shares)</div>
+    <div class="qty-row">
+      <div class="qbtn" onclick="chgQty(-1)">−</div>
+      <div class="qval">1</div>
+      <div class="qbtn" onclick="chgQty(1)">+</div>
+    </div>
+    <div class="total-line">
+      <span style="font-size:13px;color:var(--text-secondary);">You receive</span>
+      <span style="font-size:16px;font-weight:600;">₹2,847.50</span>
+    </div>
+    <div class="avail">You own: 35 shares</div>
+    <button class="cfm-btn cfm-sell" onclick="executeTrade()">
+      Place sell order
+    </button>
+    <span class="cancel-lnk" onclick="closeModal()">Cancel</span>
+  </div>
   </div>
 
   <div class="header">
@@ -133,7 +154,7 @@
     <div class="header-right">
       <span class="exchange-badge">NSE</span>
       <span class="exchange-badge">BSE</span>
-      <span class="market-time" id="mtime"></span>
+      <span class="market-time" id="mtime">01:24 am IST</span>
     </div>
   </div>
 
@@ -164,21 +185,432 @@
   <!-- Market Tab -->
   <div id="tab-market" class="section active">
     <input class="search-bar" type="text" placeholder="Search stocks by name or ticker..." id="search-input" oninput="renderMarket()">
-    <div class="sector-pills" id="sector-pills"></div>
-    <div class="stock-list" id="stock-list"></div>
+    <div class="sector-pills" id="sector-pills"><div class="pill active" onclick="setSector('All')">All</div><div class="pill" onclick="setSector('Energy')">Energy</div><div class="pill" onclick="setSector('IT')">IT</div><div class="pill" onclick="setSector('Banking')">Banking</div><div class="pill" onclick="setSector('FMCG')">FMCG</div><div class="pill" onclick="setSector('NBFC')">NBFC</div><div class="pill" onclick="setSector('Auto')">Auto</div><div class="pill" onclick="setSector('Pharma')">Pharma</div><div class="pill" onclick="setSector('Utilities')">Utilities</div><div class="pill" onclick="setSector('Consumer')">Consumer</div><div class="pill" onclick="setSector('Infra')">Infra</div></div>
+    <div class="stock-list" id="stock-list"><div class="stock-row">
+      <div style="flex:1;min-width:0;">
+        <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;">
+          <span class="sticker">RELIANCE</span>
+          <span class="ex-tag">NSE</span>
+          <span style="font-size:10px;color:var(--text-secondary);">35 held</span>
+        </div>
+        <div class="sname">Reliance Industries</div>
+        <div class="ssector">Energy</div>
+      </div>
+      <div style="display:flex;align-items:center;">
+        <div style="margin-right:10px;">
+          <div class="sprice">₹2,847.50</div>
+          <div class="schg up">+1.24%</div>
+        </div>
+        <div class="action-btns">
+          <button class="btn-b" onclick="openModal('RELIANCE','buy')">Buy</button>
+          <button class="btn-s" onclick="openModal('RELIANCE','sell')">Sell</button>
+        </div>
+      </div>
+    </div><div class="stock-row">
+      <div style="flex:1;min-width:0;">
+        <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;">
+          <span class="sticker">TCS</span>
+          <span class="ex-tag">NSE</span>
+          
+        </div>
+        <div class="sname">Tata Consultancy Services</div>
+        <div class="ssector">IT</div>
+      </div>
+      <div style="display:flex;align-items:center;">
+        <div style="margin-right:10px;">
+          <div class="sprice">₹3,921.00</div>
+          <div class="schg down">-0.55%</div>
+        </div>
+        <div class="action-btns">
+          <button class="btn-b" onclick="openModal('TCS','buy')">Buy</button>
+          
+        </div>
+      </div>
+    </div><div class="stock-row">
+      <div style="flex:1;min-width:0;">
+        <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;">
+          <span class="sticker">HDFCBANK</span>
+          <span class="ex-tag">NSE</span>
+          
+        </div>
+        <div class="sname">HDFC Bank</div>
+        <div class="ssector">Banking</div>
+      </div>
+      <div style="display:flex;align-items:center;">
+        <div style="margin-right:10px;">
+          <div class="sprice">₹1,689.75</div>
+          <div class="schg up">+0.83%</div>
+        </div>
+        <div class="action-btns">
+          <button class="btn-b" onclick="openModal('HDFCBANK','buy')">Buy</button>
+          
+        </div>
+      </div>
+    </div><div class="stock-row">
+      <div style="flex:1;min-width:0;">
+        <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;">
+          <span class="sticker">INFY</span>
+          <span class="ex-tag">NSE</span>
+          
+        </div>
+        <div class="sname">Infosys</div>
+        <div class="ssector">IT</div>
+      </div>
+      <div style="display:flex;align-items:center;">
+        <div style="margin-right:10px;">
+          <div class="sprice">₹1,482.30</div>
+          <div class="schg up">+1.10%</div>
+        </div>
+        <div class="action-btns">
+          <button class="btn-b" onclick="openModal('INFY','buy')">Buy</button>
+          
+        </div>
+      </div>
+    </div><div class="stock-row">
+      <div style="flex:1;min-width:0;">
+        <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;">
+          <span class="sticker">ICICIBANK</span>
+          <span class="ex-tag">NSE</span>
+          
+        </div>
+        <div class="sname">ICICI Bank</div>
+        <div class="ssector">Banking</div>
+      </div>
+      <div style="display:flex;align-items:center;">
+        <div style="margin-right:10px;">
+          <div class="sprice">₹1,278.60</div>
+          <div class="schg down">-0.32%</div>
+        </div>
+        <div class="action-btns">
+          <button class="btn-b" onclick="openModal('ICICIBANK','buy')">Buy</button>
+          
+        </div>
+      </div>
+    </div><div class="stock-row">
+      <div style="flex:1;min-width:0;">
+        <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;">
+          <span class="sticker">HINDUNILVR</span>
+          <span class="ex-tag">BSE</span>
+          
+        </div>
+        <div class="sname">Hindustan Unilever</div>
+        <div class="ssector">FMCG</div>
+      </div>
+      <div style="display:flex;align-items:center;">
+        <div style="margin-right:10px;">
+          <div class="sprice">₹2,345.00</div>
+          <div class="schg up">+0.45%</div>
+        </div>
+        <div class="action-btns">
+          <button class="btn-b" onclick="openModal('HINDUNILVR','buy')">Buy</button>
+          
+        </div>
+      </div>
+    </div><div class="stock-row">
+      <div style="flex:1;min-width:0;">
+        <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;">
+          <span class="sticker">ITC</span>
+          <span class="ex-tag">NSE</span>
+          
+        </div>
+        <div class="sname">ITC Limited</div>
+        <div class="ssector">FMCG</div>
+      </div>
+      <div style="display:flex;align-items:center;">
+        <div style="margin-right:10px;">
+          <div class="sprice">₹432.15</div>
+          <div class="schg up">+0.91%</div>
+        </div>
+        <div class="action-btns">
+          <button class="btn-b" onclick="openModal('ITC','buy')">Buy</button>
+          
+        </div>
+      </div>
+    </div><div class="stock-row">
+      <div style="flex:1;min-width:0;">
+        <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;">
+          <span class="sticker">SBIN</span>
+          <span class="ex-tag">NSE</span>
+          
+        </div>
+        <div class="sname">State Bank of India</div>
+        <div class="ssector">Banking</div>
+      </div>
+      <div style="display:flex;align-items:center;">
+        <div style="margin-right:10px;">
+          <div class="sprice">₹798.40</div>
+          <div class="schg down">-1.20%</div>
+        </div>
+        <div class="action-btns">
+          <button class="btn-b" onclick="openModal('SBIN','buy')">Buy</button>
+          
+        </div>
+      </div>
+    </div><div class="stock-row">
+      <div style="flex:1;min-width:0;">
+        <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;">
+          <span class="sticker">BAJFINANCE</span>
+          <span class="ex-tag">NSE</span>
+          
+        </div>
+        <div class="sname">Bajaj Finance</div>
+        <div class="ssector">NBFC</div>
+      </div>
+      <div style="display:flex;align-items:center;">
+        <div style="margin-right:10px;">
+          <div class="sprice">₹7,124.00</div>
+          <div class="schg up">+2.10%</div>
+        </div>
+        <div class="action-btns">
+          <button class="btn-b" onclick="openModal('BAJFINANCE','buy')">Buy</button>
+          
+        </div>
+      </div>
+    </div><div class="stock-row">
+      <div style="flex:1;min-width:0;">
+        <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;">
+          <span class="sticker">WIPRO</span>
+          <span class="ex-tag">NSE</span>
+          
+        </div>
+        <div class="sname">Wipro</div>
+        <div class="ssector">IT</div>
+      </div>
+      <div style="display:flex;align-items:center;">
+        <div style="margin-right:10px;">
+          <div class="sprice">₹521.85</div>
+          <div class="schg down">-0.65%</div>
+        </div>
+        <div class="action-btns">
+          <button class="btn-b" onclick="openModal('WIPRO','buy')">Buy</button>
+          
+        </div>
+      </div>
+    </div><div class="stock-row">
+      <div style="flex:1;min-width:0;">
+        <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;">
+          <span class="sticker">TATAMOTORS</span>
+          <span class="ex-tag">NSE</span>
+          
+        </div>
+        <div class="sname">Tata Motors</div>
+        <div class="ssector">Auto</div>
+      </div>
+      <div style="display:flex;align-items:center;">
+        <div style="margin-right:10px;">
+          <div class="sprice">₹892.70</div>
+          <div class="schg up">+3.45%</div>
+        </div>
+        <div class="action-btns">
+          <button class="btn-b" onclick="openModal('TATAMOTORS','buy')">Buy</button>
+          
+        </div>
+      </div>
+    </div><div class="stock-row">
+      <div style="flex:1;min-width:0;">
+        <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;">
+          <span class="sticker">MARUTI</span>
+          <span class="ex-tag">NSE</span>
+          
+        </div>
+        <div class="sname">Maruti Suzuki</div>
+        <div class="ssector">Auto</div>
+      </div>
+      <div style="display:flex;align-items:center;">
+        <div style="margin-right:10px;">
+          <div class="sprice">₹12,480.00</div>
+          <div class="schg up">+1.88%</div>
+        </div>
+        <div class="action-btns">
+          <button class="btn-b" onclick="openModal('MARUTI','buy')">Buy</button>
+          
+        </div>
+      </div>
+    </div><div class="stock-row">
+      <div style="flex:1;min-width:0;">
+        <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;">
+          <span class="sticker">SUNPHARMA</span>
+          <span class="ex-tag">NSE</span>
+          
+        </div>
+        <div class="sname">Sun Pharmaceutical</div>
+        <div class="ssector">Pharma</div>
+      </div>
+      <div style="display:flex;align-items:center;">
+        <div style="margin-right:10px;">
+          <div class="sprice">₹1,648.20</div>
+          <div class="schg up">+0.72%</div>
+        </div>
+        <div class="action-btns">
+          <button class="btn-b" onclick="openModal('SUNPHARMA','buy')">Buy</button>
+          
+        </div>
+      </div>
+    </div><div class="stock-row">
+      <div style="flex:1;min-width:0;">
+        <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;">
+          <span class="sticker">DRREDDY</span>
+          <span class="ex-tag">BSE</span>
+          
+        </div>
+        <div class="sname">Dr. Reddy's Laboratories</div>
+        <div class="ssector">Pharma</div>
+      </div>
+      <div style="display:flex;align-items:center;">
+        <div style="margin-right:10px;">
+          <div class="sprice">₹5,724.00</div>
+          <div class="schg down">-0.44%</div>
+        </div>
+        <div class="action-btns">
+          <button class="btn-b" onclick="openModal('DRREDDY','buy')">Buy</button>
+          
+        </div>
+      </div>
+    </div><div class="stock-row">
+      <div style="flex:1;min-width:0;">
+        <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;">
+          <span class="sticker">ONGC</span>
+          <span class="ex-tag">NSE</span>
+          
+        </div>
+        <div class="sname">ONGC</div>
+        <div class="ssector">Energy</div>
+      </div>
+      <div style="display:flex;align-items:center;">
+        <div style="margin-right:10px;">
+          <div class="sprice">₹268.50</div>
+          <div class="schg up">+0.33%</div>
+        </div>
+        <div class="action-btns">
+          <button class="btn-b" onclick="openModal('ONGC','buy')">Buy</button>
+          
+        </div>
+      </div>
+    </div><div class="stock-row">
+      <div style="flex:1;min-width:0;">
+        <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;">
+          <span class="sticker">POWERGRID</span>
+          <span class="ex-tag">NSE</span>
+          
+        </div>
+        <div class="sname">Power Grid Corp.</div>
+        <div class="ssector">Utilities</div>
+      </div>
+      <div style="display:flex;align-items:center;">
+        <div style="margin-right:10px;">
+          <div class="sprice">₹318.90</div>
+          <div class="schg up">+1.05%</div>
+        </div>
+        <div class="action-btns">
+          <button class="btn-b" onclick="openModal('POWERGRID','buy')">Buy</button>
+          
+        </div>
+      </div>
+    </div><div class="stock-row">
+      <div style="flex:1;min-width:0;">
+        <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;">
+          <span class="sticker">TITAN</span>
+          <span class="ex-tag">NSE</span>
+          
+        </div>
+        <div class="sname">Titan Company</div>
+        <div class="ssector">Consumer</div>
+      </div>
+      <div style="display:flex;align-items:center;">
+        <div style="margin-right:10px;">
+          <div class="sprice">₹3,356.00</div>
+          <div class="schg up">+0.60%</div>
+        </div>
+        <div class="action-btns">
+          <button class="btn-b" onclick="openModal('TITAN','buy')">Buy</button>
+          
+        </div>
+      </div>
+    </div><div class="stock-row">
+      <div style="flex:1;min-width:0;">
+        <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;">
+          <span class="sticker">ADANIPORTS</span>
+          <span class="ex-tag">NSE</span>
+          
+        </div>
+        <div class="sname">Adani Ports</div>
+        <div class="ssector">Infra</div>
+      </div>
+      <div style="display:flex;align-items:center;">
+        <div style="margin-right:10px;">
+          <div class="sprice">₹1,245.80</div>
+          <div class="schg down">-0.90%</div>
+        </div>
+        <div class="action-btns">
+          <button class="btn-b" onclick="openModal('ADANIPORTS','buy')">Buy</button>
+          
+        </div>
+      </div>
+    </div><div class="stock-row">
+      <div style="flex:1;min-width:0;">
+        <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;">
+          <span class="sticker">LTIM</span>
+          <span class="ex-tag">NSE</span>
+          
+        </div>
+        <div class="sname">LTIMindtree</div>
+        <div class="ssector">IT</div>
+      </div>
+      <div style="display:flex;align-items:center;">
+        <div style="margin-right:10px;">
+          <div class="sprice">₹5,142.00</div>
+          <div class="schg up">+1.33%</div>
+        </div>
+        <div class="action-btns">
+          <button class="btn-b" onclick="openModal('LTIM','buy')">Buy</button>
+          
+        </div>
+      </div>
+    </div><div class="stock-row">
+      <div style="flex:1;min-width:0;">
+        <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;">
+          <span class="sticker">COALINDIA</span>
+          <span class="ex-tag">NSE</span>
+          
+        </div>
+        <div class="sname">Coal India</div>
+        <div class="ssector">Energy</div>
+      </div>
+      <div style="display:flex;align-items:center;">
+        <div style="margin-right:10px;">
+          <div class="sprice">₹412.35</div>
+          <div class="schg down">-0.18%</div>
+        </div>
+        <div class="action-btns">
+          <button class="btn-b" onclick="openModal('COALINDIA','buy')">Buy</button>
+          
+        </div>
+      </div>
+    </div></div>
   </div>
 
   <!-- Portfolio Tab -->
   <div id="tab-portfolio" class="section">
     <div class="metrics">
-      <div class="metric"><div class="mlabel">Available cash</div><div class="mval" id="cash2">-</div></div>
-      <div class="metric"><div class="mlabel">Portfolio value</div><div class="mval" id="portval">-</div></div>
-      <div class="metric"><div class="mlabel">Total invested</div><div class="mval" id="invested">-</div></div>
-      <div class="metric"><div class="mlabel">Overall P&L</div><div class="mval" id="pnl">-</div></div>
+      <div class="metric"><div class="mlabel">Available cash</div><div class="mval" id="cash2">₹337.50</div></div>
+      <div class="metric"><div class="mlabel">Portfolio value</div><div class="mval" id="portval">₹99,662.50</div></div>
+      <div class="metric"><div class="mlabel">Total invested</div><div class="mval" id="invested">₹99,662.50</div></div>
+      <div class="metric"><div class="mlabel">Overall P&amp;L</div><div class="mval" id="pnl" style="color: var(--text-success);">+₹0</div></div>
     </div>
-    <div class="chart-wrap"><canvas id="portChart"></canvas></div>
-    <div class="port-legend" id="portLegend"></div>
-    <div class="holdings-list" id="holdings-list"></div>
+    <div class="chart-wrap"><canvas id="portChart" width="688" height="200" style="display: block; box-sizing: border-box; height: 200px; width: 688px;"></canvas></div>
+    <div class="port-legend" id="portLegend"><span style="display:flex;align-items:center;gap:4px;"><span style="width:8px;height:8px;border-radius:2px;background:#1D9E75;display:inline-block;"></span>RELIANCE</span></div>
+    <div class="holdings-list" id="holdings-list"><div class="holding-row">
+      <div>
+        <div style="font-weight:600;font-size:14px;">RELIANCE</div>
+        <div class="sname">35 shares · avg ₹2,847.50</div>
+        <div class="ssector">Energy</div>
+      </div>
+      <div style="text-align:right;">
+        <div style="font-size:14px;font-weight:600;">₹99,662.50</div>
+        <div class="up" style="font-size:11px;">+₹0 (+0.00%)</div>
+        <button class="btn-s" style="margin-top:5px;font-size:10px;padding:3px 9px;" onclick="openModal('RELIANCE','sell')">Sell</button>
+      </div>
+    </div></div>
   </div>
 
   <!-- History Tab -->
@@ -442,5 +874,6 @@ function showToast(msg, type) {
 
 renderMarket();
 </script>
-</body>
-</html>
+
+
+</body></html>
